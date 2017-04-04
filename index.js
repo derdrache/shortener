@@ -1,30 +1,67 @@
 var express = require("express");
 var app = express();
-
-var eingabe;
-
+var mongoClient = require("mongodb").MongoClient;
+var dburl = "mongodb://localhost:27017/shortener"
+var open = require("openurl");
+const appUrl ="https://api-projects-derdrache.c9users.io/"; //muss für heroku geändert werden
 
 app.get("/:url*", function(req, res){
-    
-    var url = req.params.url+req.params[0];
-    var checkUrl = new RegExp("^(http:\/\/www\.|https:\/\/www\.)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$");
+  
+    const url = req.params.url+req.params[0];
+    const checkUrl = new RegExp("^(http:\/\/www\.|https:\/\/www\.)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$");
 
-    if (!checkUrl.test(url)){
-        res.send("Please enter a valid URL");
+    if (!isNaN(url)) {
+        var newUrl = appUrl+url;
+        
+        mongoClient.connect(dburl, function(err,db){
+            db.collection("urlchange").find({}).toArray(function(err,result){
+            
+                for (var i = 0; i<result.length; i++){
+                    if (newUrl == result[i].shortUrl){
+                    res.redirect(result[i].originalUrl);    
+                    break;
+                }   }
+            
+                db.close();
+            });
+        });    
+        
+   
+        
+        
+    }else if (!checkUrl.test(url)){
+        res.send(url);
         
     }else { 
-        eingabe = url;
+       
+        mongoClient.connect(dburl, function(err,db){
+            if (err) {console.log("db connect error", err);
+        } else{
+            db.collection("urlchange").find({},{_id: 0}).toArray(function(err, result){
+            if (err){res.send("we have a problem");} 
+            else if (result.length){
+                for (var i = 0; i<result.length; i++){
+                if (url == result[i].originalUrl){res.send(result[i]); break;}
+                  
+                  //was ist wenn url nicht in der db  
+                    
+                    
+                }
+                
+                
+                
+                
+                
+                //res.send(result)
+                
+            }else {res.send("no documents found")}
+            
+            db.close();
+            
+            });
+        }
+        })
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        res.send("looks good");
     }            
 });
 
