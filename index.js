@@ -1,11 +1,31 @@
 var express = require("express");
 var app = express();
 
+var eingabe;
 
 
-app.get("/", function(req, res){
-   res.send("hello world");
-   
+app.get("/:url*", function(req, res){
+    
+    var url = req.params.url+req.params[0];
+    var checkUrl = new RegExp("^(http:\/\/www\.|https:\/\/www\.)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$");
+
+    if (!checkUrl.test(url)){
+        res.send("Please enter a valid URL");
+        
+    }else { 
+        eingabe = url;
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        res.send("looks good");
+    }            
 });
 
 
