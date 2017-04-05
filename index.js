@@ -40,19 +40,23 @@ app.get("/:url*", function(req, res){
             db.collection("urlchange").find({},{_id: 0}).toArray(function(err, result){
             if (err){res.send("we have a problem");} 
             else if (result.length){
+                var check = 0;
                 for (var i = 0; i<result.length; i++){
                 if (url == result[i].originalUrl){res.send(result[i]); break;}
+                  check++;
                   
-                  //was ist wenn url nicht in der db  
-                    
-                    
+                  
+                }
+                //was ist wenn url nicht in der db 
+                if (check === result.length){
+                    var urlNew = appUrl + (result.length+1)
+                  db.collection("urlchange").insert({
+                        originalUrl: url,
+                        shortUrl: urlNew
+                    })
+                    res.send({"originalUrl": url, "shortUrl": urlNew})
                 }
                 
-                
-                
-                
-                
-                //res.send(result)
                 
             }else {res.send("no documents found")}
             
