@@ -1,8 +1,8 @@
 var express = require("express");
 var app = express();
 var mongoClient = require("mongodb").MongoClient;
-var dburl = "mongodb://localhost:27017/shortener"
-const appUrl ="https://api-projects-derdrache.c9users.io/"; //muss für heroku geändert werden
+const dburl = "mongodb://shortener:shortener@ds145220.mlab.com:45220/shortener"//"mongodb://localhost:27017/shortener"
+const appUrl ="https://derdrache-shortener.herokuapp.com/"; 
 
 app.get("/:url*", function(req, res){
   
